@@ -45,11 +45,11 @@ func {{ $funcName }}(in any) {{ $msg.ReturnType $meta }} {
 
 {{- $numOfFields := len $msg.Fields }}
 {{- if and ($msg.IsCall) (ne $numOfFields 0) }}
-func {{ $funcName }}_wrap(in any) *pbgearextrinsic.RuntimeCall{
+func {{ $funcName }}_wrap(in any) *pbgearextrinsic.Extrinsic{
     res := {{ $funcName }}(in)
-    out := &pbgearextrinsic.RuntimeCall_{{ $msg.WrapTypeName }}{ }
+    out := &pbgearextrinsic.Extrinsic_{{ $msg.WrapTypeName }}{ }
     reflect.ValueOf(out).Elem().FieldByName("{{ $msg.WrapTypeName }}").Set(reflect.ValueOf(res))
-    return &pbgearextrinsic.RuntimeCall{
+    return &pbgearextrinsic.Extrinsic{
         Call: out,
     }
 }

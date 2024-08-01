@@ -535,6 +535,8 @@ github.com/streamingfast/dtracing v0.0.0-20220305214756-b5c0e8699839 h1:K6mJPvh1
 github.com/streamingfast/dtracing v0.0.0-20220305214756-b5c0e8699839/go.mod h1:huOJyjMYS6K8upTuxDxaNd+emD65RrXoVBvh8f1/7Ns=
 github.com/streamingfast/firehose-core v1.5.6-0.20240718130745-448b71acbd14 h1:Bxmvty3q6gbUhA1v7b5YMcCix7DWi+AIP6/vMnUzhOM=
 github.com/streamingfast/firehose-core v1.5.6-0.20240718130745-448b71acbd14/go.mod h1:EVtYPdSL8gfYltqQ2ebWgzFzFLHU8n8OEgSb+cRIoNU=
+github.com/streamingfast/firehose-gear v0.0.0-20240801184131-b94c4ba58381 h1:yYM6nA4cV0b4BL3NjGqy1KamsVo3MfNDHThG4s8fSpo=
+github.com/streamingfast/firehose-gear v0.0.0-20240801184131-b94c4ba58381/go.mod h1:+wP3t4lTTQPkuaqLHVli9NVQcKbbvu5BVBMlDI0aviU=
 github.com/streamingfast/go-substrate-rpc-client/v4 v4.0.0-20240801151340-0470057f21cd h1:rOKiic9S3dY9L4CrEtLd5vjet887FY6w6SJqtdrfPwA=
 github.com/streamingfast/go-substrate-rpc-client/v4 v4.0.0-20240801151340-0470057f21cd/go.mod h1:k61SBXqYmnZO4frAJyH3iuqjolYrYsq79r8EstmklDY=
 github.com/streamingfast/logging v0.0.0-20210811175431-f3b44b61606a/go.mod h1:4GdqELhZOXj4xwc4IaBmzofzdErGynnaSzuzxy0ZIBo=

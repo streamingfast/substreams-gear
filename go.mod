@@ -14,6 +14,7 @@ require (
 	github.com/planetscale/vtprotobuf v0.6.0
 	github.com/spf13/cobra v1.7.0
 	github.com/streamingfast/cli v0.0.4-0.20240412191021-5f81842cb71d
+	github.com/streamingfast/firehose-gear v0.0.0-20240801184131-b94c4ba58381
 	go.uber.org/zap v1.26.0
 )
 

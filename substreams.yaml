@@ -1,0 +1,16 @@
+specVersion: v0.1.0
+package:
+  name: gear
+  version: v0.1.0
+  url: https://github.com/streamingfast/substreams-starknet
+  doc: |
+    These substreams modules is bundling lib and proto files descriptor for gear chain 
+
+network: gear
+
+protobuf:
+  descriptorSets:
+    - module: buf.build/streamingfast/firehose-gear
+    - module: buf.build/protocolbuffers/wellknowntypes
+      symbols:
+        - google.protobuf.Duration
