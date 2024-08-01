@@ -1,0 +1,42 @@
+syntax = "proto3";
+package sf.substreams.gear.type.v1;
+
+option go_package = "github.com/streamingfast/substreams-gear/pb/sf/substreams/gear/type/v1";
+import "sf/substreams/gear/type/v1/vara.proto";
+import "sf/gear/type/v1/block.proto";
+
+{{- $generator := . }}
+{{- $messages := $generator.Messages }}
+message Extrinsic {
+  uint32 version = 1;
+  sf.gear.type.v1.Signature signature = 2;
+  oneof call {
+    {{- $count := 3}}
+    {{- range $msg := $messages }}
+    {{- $numOfFields := len $msg.Fields }}
+    {{- if and ($msg.IsCall) (ne $numOfFields 0) }}
+    sf.substreams.gear.type.v1.{{ $msg.ProtoMessageTypeName }} {{ $msg.ProtoMessageFieldName }} = {{ $count }};
+    {{- $count = add $count 1 -}}
+    {{- end}}
+    {{- end }}
+  }
+}
+
+message Event {
+  string name = 1;
+  // [2]byte
+  bytes id = 2;
+  sf.gear.type.v1.Phase phase = 3;
+  // [32]byte
+  repeated bytes topics = 4;
+  oneof event {
+    {{- $count := 5}}
+    {{- range $msg := $messages }}
+    {{- $numOfFields := len $msg.Fields }}
+    {{- if and ($msg.IsEvent) (ne $numOfFields 0) }}
+    sf.substreams.gear.type.v1.{{ $msg.ProtoMessageTypeName }} {{ $msg.ProtoMessageFieldName }} = {{ $count }};
+    {{- $count = add $count 1 -}}
+    {{- end}}
+    {{- end }}
+  }
+}

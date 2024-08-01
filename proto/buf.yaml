@@ -1,0 +1,8 @@
+version: v1
+name: buf.build/streamingfast/substreams-gear
+deps:
+  - buf.build/googleapis/googleapis
+  - buf.build/streamingfast/firehose-gear
+breaking:
+  use:
+    - FILE

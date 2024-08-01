@@ -1,0 +1,17 @@
+syntax = "proto3";
+package sf.substreams.gear.type.v1;
+
+option go_package = "github.com/streamingfast/substreams-gear/pb/sf/substreams/gear/type/v1";
+import "sf/substreams/gear/type/v1/vara.proto";
+import "sf/substreams/gear/type/v1/extrinsics.proto";
+import "sf/gear/type/v1/block.proto";
+
+message Block {
+    uint64 number = 1;
+    bytes hash = 2;
+    sf.gear.type.v1.Header header = 3;
+    repeated sf.gear.type.v1.DigestItem digest_items = 4;
+    bytes justification = 5;
+    repeated sf.substreams.gear.type.v1.Extrinsic extrinsics = 6;
+    repeated sf.substreams.gear.type.v1.Event events = 7;
+}
