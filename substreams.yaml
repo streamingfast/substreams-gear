@@ -2,7 +2,7 @@ specVersion: v0.1.0
 package:
   name: gear
   version: v0.1.0
-  url: https://github.com/streamingfast/substreams-starknet
+  url: https://github.com/streamingfast/substreams-gear
   doc: |
     These substreams modules is bundling lib and proto files descriptor for gear chain 
 
