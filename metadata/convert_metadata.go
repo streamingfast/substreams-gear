@@ -3,29 +3,31 @@ package metadata
 import (
 	"fmt"
 
+	"math"
+	"strings"
+
 	substrateTypes "github.com/centrifuge/go-substrate-rpc-client/v4/types"
 	"github.com/gobeam/stringy"
 	"github.com/streamingfast/logging"
 	"github.com/streamingfast/substreams-gear/protobuf"
 	"github.com/streamingfast/substreams-gear/types"
 	"go.uber.org/zap"
-	"math"
-	"strings"
 )
 
 type MetadataConverter struct {
-	logger *zap.Logger
-	tracer logging.Tracer
-
+	logger        *zap.Logger
+	tracer        logging.Tracer
+	specVersion   string
 	TypeConverter *TypeConverter
 	metadata      *substrateTypes.Metadata
 }
 
-func NewMetadataConverter(metadata *substrateTypes.Metadata, logger *zap.Logger, tracer logging.Tracer) *MetadataConverter {
+func NewMetadataConverter(metadata *substrateTypes.Metadata, specVersion string, logger *zap.Logger, tracer logging.Tracer) *MetadataConverter {
 	return &MetadataConverter{
-		logger:   logger,
-		tracer:   tracer,
-		metadata: metadata,
+		specVersion: specVersion,
+		logger:      logger,
+		tracer:      tracer,
+		metadata:    metadata,
 	}
 }
 
@@ -44,10 +46,10 @@ func (c *MetadataConverter) FetchMetadata() *substrateTypes.Metadata {
 }
 
 func (c *MetadataConverter) Convert() ([]*protobuf.Message, error) {
-
 	switch c.metadata.Version {
 	case 14:
 		c.TypeConverter = &TypeConverter{
+			specVersion:      c.specVersion,
 			messages:         make(map[string]*protobuf.Message),
 			allMetadataTypes: []substrateTypes.PortableTypeV14{},
 		}
@@ -60,6 +62,7 @@ func (c *MetadataConverter) Convert() ([]*protobuf.Message, error) {
 }
 
 type TypeConverter struct {
+	specVersion      string
 	messages         map[string]*protobuf.Message
 	allMetadataTypes []substrateTypes.PortableTypeV14
 }
@@ -289,8 +292,23 @@ func (c *TypeConverter) FieldForComposite(ttype substrateTypes.PortableTypeV14, 
 }
 
 func (c *TypeConverter) FieldForType(ttype substrateTypes.PortableTypeV14, palletName string, callName string, fieldName string) protobuf.Field {
-	if ttype.ID.Int64() == 65 {
-		return c.FieldFor65(ttype, palletName, callName, fieldName)
+	recursiveIdx := int64(0)
+
+	switch c.specVersion {
+	case "1420", "1410", "1400":
+		recursiveIdx = 65
+	case "1310", "1300", "1210", "1200", "1110", "1050", "1040", "1030":
+		recursiveIdx = 64
+	case "1020", "1010", "1000", "350", "340", "330", "320", "310":
+		recursiveIdx = 63
+	case "210", "140", "130", "120", "100":
+		recursiveIdx = 60
+	default:
+		panic("unsupported spec version")
+	}
+
+	if ttype.ID.Int64() == recursiveIdx {
+		return c.FieldForRecursiveType(ttype, palletName, callName, fieldName)
 	}
 
 	var field protobuf.Field
@@ -484,7 +502,7 @@ func (c *TypeConverter) MessageForType(typeName string, ttype substrateTypes.Por
 	return
 }
 
-func (c *TypeConverter) FieldFor65(ttype substrateTypes.PortableTypeV14, palletName string, callName string, fieldName string) protobuf.Field {
+func (c *TypeConverter) FieldForRecursiveType(ttype substrateTypes.PortableTypeV14, palletName string, callName string, fieldName string) protobuf.Field {
 	field := &protobuf.OneOfField{
 		Pallet:   palletNameFromPath(ttype.Type.Path, palletName, false),
 		Name:     fieldName,
@@ -600,9 +618,6 @@ func (c *TypeConverter) FieldForVariant(ttype substrateTypes.PortableTypeV14, pa
 
 		m := c.MessageForVariantTypes(typeName, v, palletName, callName, string(v.Name))
 		fullName := m.FullTypeName()
-		if strings.Contains(fullName, "V1") {
-			println("")
-		}
 		if _, found := c.messages[fullName]; !found {
 			c.messages[fullName] = m
 		}

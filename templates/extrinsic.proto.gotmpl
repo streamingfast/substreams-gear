@@ -1,11 +1,12 @@
 syntax = "proto3";
-package sf.substreams.gear.type.v1;
+{{- $generator := . }}
+package sf.substreams.vara.type.v{{ $generator.Version }};
 
-option go_package = "github.com/streamingfast/substreams-gear/pb/sf/substreams/gear/type/v1";
-import "sf/substreams/gear/type/v1/vara.proto";
+option go_package = "github.com/streamingfast/substreams-gear/pb/sf/substreams/vara/type/v{{ $generator.Version }}";
+import "sf/substreams/vara/type/v{{ $generator.Version }}/vara.proto";
 import "sf/gear/type/v1/block.proto";
 
-{{- $generator := . }}
+
 {{- $messages := $generator.Messages }}
 message Extrinsic {
   uint32 version = 1;
@@ -15,13 +16,23 @@ message Extrinsic {
     {{- range $msg := $messages }}
     {{- $numOfFields := len $msg.Fields }}
     {{- if and ($msg.IsCall) (ne $numOfFields 0) }}
-    sf.substreams.gear.type.v1.{{ $msg.ProtoMessageTypeName }} {{ $msg.ProtoMessageFieldName }} = {{ $count }};
+    sf.substreams.vara.type.v{{ $generator.Version }}.{{ $msg.ProtoMessageTypeName }} {{ $msg.ProtoMessageFieldName }} = {{ $count }};
     {{- $count = add $count 1 -}}
     {{- end}}
     {{- end }}
   }
 }
 
+{{- $containsEvent := false }}
+{{- range $msg := $messages }}
+{{- $numOfFields := len $msg.Fields }}
+{{- if and ($msg.IsEvent) (ne $numOfFields 0) }}
+{{- $containsEvent = true }}
+{{- break }}
+{{- end}}
+{{- end }}
+
+{{- if $containsEvent }}
 message Event {
   string name = 1;
   // [2]byte
@@ -34,9 +45,10 @@ message Event {
     {{- range $msg := $messages }}
     {{- $numOfFields := len $msg.Fields }}
     {{- if and ($msg.IsEvent) (ne $numOfFields 0) }}
-    sf.substreams.gear.type.v1.{{ $msg.ProtoMessageTypeName }} {{ $msg.ProtoMessageFieldName }} = {{ $count }};
+    sf.substreams.vara.type.v{{ $generator.Version }}.{{ $msg.ProtoMessageTypeName }} {{ $msg.ProtoMessageFieldName }} = {{ $count }};
     {{- $count = add $count 1 -}}
     {{- end}}
     {{- end }}
   }
 }
+{{- end }}

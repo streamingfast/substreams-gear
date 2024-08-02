@@ -98,10 +98,6 @@ func (m *Message) ProtoMessageFieldName() string {
 func (m *Message) ToProto() string {
 	var sb strings.Builder
 
-	if m.Name == "V1" {
-		println("")
-	}
-
 	sb.WriteString("message " + m.FullTypeName() + " {\n")
 	idx := 0
 	str := ""

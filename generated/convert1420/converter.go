@@ -7,13 +7,13 @@ import (
 	"github.com/centrifuge/go-substrate-rpc-client/v4/registry"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types"
 	pbgear "github.com/streamingfast/substreams-gear/pb/sf/substreams/gear/type/v1"
-	pbgearextrinsic "github.com/streamingfast/substreams-gear/pb/sf/substreams/gear/type/v1"
+	pbgearextrinsic "github.com/streamingfast/substreams-gear/pb/sf/substreams/vara/type/v1420"
 )
 
 func To_Active(in any) *pbgear.Active {
 	out := &pbgear.Active{}
 	v := in.(registry.Valuable)
-	_ = v
+	_ = v7
 
 	// primitive field Expiration
 	if v.HasValue() {
