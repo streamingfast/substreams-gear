@@ -43,7 +43,7 @@ func (mc *MetadataConverter) FetchMetadata() *substrateTypes.Metadata {
 }
 
 func (mc *MetadataConverter) Convert() ([]byte, error) {
-	metadata := loadMetadata()
+	metadata := LoadMetadata()
 	mc.metaData = metadata
 	if metadata.Version != 14 {
 		return nil, nil
