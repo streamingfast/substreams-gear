@@ -16,7 +16,9 @@ func To_Active(in any) *pbgear.Active {
 	_ = v
 
 	// primitive field Expiration
-	out.Expiration = To_Optional_uint32(v.ValueAt(0))
+	if v.HasValue() {
+		out.Expiration = To_Optional_uint32(v.ValueAt(0))
+	}
 
 	return out //from message
 }
@@ -3989,7 +3991,7 @@ func To_Balances_PoolCommissionUpdated(in any) *pbgear.Balances_PoolCommissionUp
 
 	// primitive field PoolId
 	out.PoolId = To_uint32(v.ValueAt(0))
-	// optional field Current
+	// optional field Current true
 	if v.HasValue() {
 		out.Current = To_Optional_Balances_PoolCommissionUpdated_current(v.ValueAt(1))
 	}
@@ -4654,15 +4656,15 @@ func To_Balances_RolesUpdated(in any) *pbgear.Balances_RolesUpdated {
 	v := in.(registry.Valuable)
 	_ = v
 
-	// optional field Root
+	// optional field Root true
 	if v.HasValue() {
 		out.Root = To_Optional_Balances_RolesUpdated_root(v.ValueAt(0))
 	}
-	// optional field Bouncer
+	// optional field Bouncer true
 	if v.HasValue() {
 		out.Bouncer = To_Optional_Balances_RolesUpdated_bouncer(v.ValueAt(1))
 	}
-	// optional field Nominator
+	// optional field Nominator true
 	if v.HasValue() {
 		out.Nominator = To_Optional_Balances_RolesUpdated_nominator(v.ValueAt(2))
 	}
@@ -4866,7 +4868,7 @@ func To_Balances_SolutionStored(in any) *pbgear.Balances_SolutionStored {
 	// oneOf field Compute
 	v0 := To_OneOf_Balances_SolutionStored_compute(v.ValueAt(0))
 	reflect.ValueOf(out).Elem().FieldByName("Compute").Set(reflect.ValueOf(v0))
-	// optional field Origin
+	// optional field Origin true
 	if v.HasValue() {
 		out.Origin = To_Optional_Balances_SolutionStored_origin(v.ValueAt(1))
 	}
@@ -5853,7 +5855,9 @@ func To_Balances_UserMessageSent(in any) *pbgear.Balances_UserMessageSent {
 	// field Message To_GearCoreMessageUserUserMessage(w)
 	out.Message = To_GearCoreMessageUserUserMessage(v.ValueAt(0))
 	// primitive field Expiration
-	out.Expiration = To_Optional_uint32(v.ValueAt(1))
+	if v.HasValue() {
+		out.Expiration = To_Optional_uint32(v.ValueAt(1))
+	}
 
 	return out //from message
 }
@@ -6096,7 +6100,7 @@ func To_Balances_VoucherUpdated(in any) *pbgear.Balances_VoucherUpdated {
 	out.Spender = To_SpCoreCryptoAccountId32(v.ValueAt(0))
 	// field VoucherId To_GearVoucher_PalletGearVoucherInternalVoucherId(w)
 	out.VoucherId = To_GearVoucher_PalletGearVoucherInternalVoucherId(v.ValueAt(1))
-	// optional field NewOwner
+	// optional field NewOwner true
 	if v.HasValue() {
 		out.NewOwner = To_Optional_Balances_VoucherUpdated_new_owner(v.ValueAt(2))
 	}
@@ -7796,7 +7800,9 @@ func To_ConvictionVoting_RemoveVoteCall(in any) *pbgear.ConvictionVoting_RemoveV
 	_ = v
 
 	// primitive field Class
-	out.Class = To_Optional_uint32(v.ValueAt(0))
+	if v.HasValue() {
+		out.Class = To_Optional_uint32(v.ValueAt(0))
+	}
 	// primitive field Index
 	out.Index = To_uint32(v.ValueAt(1))
 
@@ -8392,9 +8398,13 @@ func To_ElectionProviderMultiPhase_GovernanceFallbackCall(in any) *pbgear.Electi
 	_ = v
 
 	// primitive field MaybeMaxVoters
-	out.MaybeMaxVoters = To_Optional_uint32(v.ValueAt(0))
+	if v.HasValue() {
+		out.MaybeMaxVoters = To_Optional_uint32(v.ValueAt(0))
+	}
 	// primitive field MaybeMaxTargets
-	out.MaybeMaxTargets = To_Optional_uint32(v.ValueAt(1))
+	if v.HasValue() {
+		out.MaybeMaxTargets = To_Optional_uint32(v.ValueAt(1))
+	}
 
 	return out //from message
 }
@@ -8489,7 +8499,7 @@ func To_ElectionProviderMultiPhase_SetMinimumUntrustedScoreCall(in any) *pbgear.
 	v := in.(registry.Valuable)
 	_ = v
 
-	// optional field MaybeNextScore
+	// optional field MaybeNextScore true
 	if v.HasValue() {
 		out.MaybeNextScore = To_Optional_ElectionProviderMultiPhase_SetMinimumUntrustedScoreCall_maybe_next_score(v.ValueAt(0))
 	}
@@ -10501,7 +10511,7 @@ func To_FellowshipReferenda_SetMetadataCall(in any) *pbgear.FellowshipReferenda_
 
 	// primitive field Index
 	out.Index = To_uint32(v.ValueAt(0))
-	// optional field MaybeHash
+	// optional field MaybeHash true
 	if v.HasValue() {
 		out.MaybeHash = To_Optional_FellowshipReferenda_SetMetadataCall_maybe_hash(v.ValueAt(1))
 	}
@@ -10708,7 +10718,7 @@ func To_FrameSupportDispatchPostDispatchInfo(in any) *pbgear.FrameSupportDispatc
 	v := in.(registry.Valuable)
 	_ = v
 
-	// optional field ActualWeight
+	// optional field ActualWeight true
 	if v.HasValue() {
 		out.ActualWeight = To_Optional_FrameSupportDispatchPostDispatchInfo_actual_weight(v.ValueAt(0))
 	}
@@ -10847,7 +10857,7 @@ func To_GearCoreMessageUserUserMessage(in any) *pbgear.GearCoreMessageUserUserMe
 	out.Payload = To_GearCoreBufferLimitedVec(v.ValueAt(3))
 	// primitive field Value
 	out.Value = To_string(v.ValueAt(4))
-	// optional field Details
+	// optional field Details true
 	if v.HasValue() {
 		out.Details = To_Optional_GearCoreMessageUserUserMessage_details(v.ValueAt(5))
 	}
@@ -11281,7 +11291,7 @@ func To_GearVoucher_IssueCall(in any) *pbgear.GearVoucher_IssueCall {
 	out.Spender = To_SpCoreCryptoAccountId32(v.ValueAt(0))
 	// primitive field Balance
 	out.Balance = To_string(v.ValueAt(1))
-	// optional field Programs
+	// optional field Programs true
 	if v.HasValue() {
 		out.Programs = To_Optional_GearVoucher_IssueCall_programs(v.ValueAt(2))
 	}
@@ -11403,19 +11413,25 @@ func To_GearVoucher_UpdateCall(in any) *pbgear.GearVoucher_UpdateCall {
 	out.Spender = To_SpCoreCryptoAccountId32(v.ValueAt(0))
 	// field VoucherId To_GearVoucher_PalletGearVoucherInternalVoucherId(w)
 	out.VoucherId = To_GearVoucher_PalletGearVoucherInternalVoucherId(v.ValueAt(1))
-	// optional field MoveOwnership
+	// optional field MoveOwnership true
 	if v.HasValue() {
 		out.MoveOwnership = To_Optional_GearVoucher_UpdateCall_move_ownership(v.ValueAt(2))
 	}
 	// primitive field BalanceTopUp
-	out.BalanceTopUp = To_Optional_string(v.ValueAt(3))
+	if v.HasValue() {
+		out.BalanceTopUp = To_Optional_string(v.ValueAt(3))
+	}
 	// oneOf field AppendPrograms
 	v4 := To_OneOf_GearVoucher_UpdateCall_append_programs(v.ValueAt(4))
 	reflect.ValueOf(out).Elem().FieldByName("AppendPrograms").Set(reflect.ValueOf(v4))
 	// primitive field CodeUploading
-	out.CodeUploading = To_Optional_bool(v.ValueAt(5))
+	if v.HasValue() {
+		out.CodeUploading = To_Optional_bool(v.ValueAt(5))
+	}
 	// primitive field ProlongDuration
-	out.ProlongDuration = To_Optional_uint32(v.ValueAt(6))
+	if v.HasValue() {
+		out.ProlongDuration = To_Optional_uint32(v.ValueAt(6))
+	}
 
 	return out //from message
 }
@@ -11513,7 +11529,9 @@ func To_Gear_RunCall(in any) *pbgear.Gear_RunCall {
 	_ = v
 
 	// primitive field MaxGas
-	out.MaxGas = To_Optional_uint64(v.ValueAt(0))
+	if v.HasValue() {
+		out.MaxGas = To_Optional_uint64(v.ValueAt(0))
+	}
 
 	return out //from message
 }
@@ -17503,7 +17521,7 @@ func To_Multisig_ApproveAsMultiCall(in any) *pbgear.Multisig_ApproveAsMultiCall 
 	out.Threshold = To_uint32(v.ValueAt(0))
 	// repeated field OtherSignatories
 	out.OtherSignatories = To_Repeated_Multisig_ApproveAsMultiCall_other_signatories(v.ValueAt(1))
-	// optional field MaybeTimepoint
+	// optional field MaybeTimepoint true
 	if v.HasValue() {
 		out.MaybeTimepoint = To_Optional_Multisig_ApproveAsMultiCall_maybe_timepoint(v.ValueAt(2))
 	}
@@ -17551,7 +17569,7 @@ func To_Multisig_AsMultiCall(in any) *pbgear.Multisig_AsMultiCall {
 	out.Threshold = To_uint32(v.ValueAt(0))
 	// repeated field OtherSignatories
 	out.OtherSignatories = To_Repeated_Multisig_AsMultiCall_other_signatories(v.ValueAt(1))
-	// optional field MaybeTimepoint
+	// optional field MaybeTimepoint true
 	if v.HasValue() {
 		out.MaybeTimepoint = To_Optional_Multisig_AsMultiCall_maybe_timepoint(v.ValueAt(2))
 	}
@@ -19560,7 +19578,7 @@ func To_NominationPools_SetCommissionCall(in any) *pbgear.NominationPools_SetCom
 
 	// primitive field PoolId
 	out.PoolId = To_uint32(v.ValueAt(0))
-	// optional field NewCommission
+	// optional field NewCommission true
 	if v.HasValue() {
 		out.NewCommission = To_Optional_NominationPools_SetCommissionCall_new_commission(v.ValueAt(1))
 	}
@@ -22585,7 +22603,7 @@ func To_Referenda_SetMetadataCall(in any) *pbgear.Referenda_SetMetadataCall {
 
 	// primitive field Index
 	out.Index = To_uint32(v.ValueAt(0))
-	// optional field MaybeHash
+	// optional field MaybeHash true
 	if v.HasValue() {
 		out.MaybeHash = To_Optional_Referenda_SetMetadataCall_maybe_hash(v.ValueAt(1))
 	}
@@ -23015,7 +23033,7 @@ func To_Scheduler_ScheduleAfterCall(in any) *pbgear.Scheduler_ScheduleAfterCall 
 
 	// primitive field After
 	out.After = To_uint32(v.ValueAt(0))
-	// optional field MaybePeriodic
+	// optional field MaybePeriodic true
 	if v.HasValue() {
 		out.MaybePeriodic = To_Optional_Scheduler_ScheduleAfterCall_maybe_periodic(v.ValueAt(1))
 	}
@@ -23171,7 +23189,7 @@ func To_Scheduler_ScheduleCall(in any) *pbgear.Scheduler_ScheduleCall {
 
 	// primitive field When
 	out.When = To_uint32(v.ValueAt(0))
-	// optional field MaybePeriodic
+	// optional field MaybePeriodic true
 	if v.HasValue() {
 		out.MaybePeriodic = To_Optional_Scheduler_ScheduleCall_maybe_periodic(v.ValueAt(1))
 	}
@@ -23329,7 +23347,7 @@ func To_Scheduler_ScheduleNamedAfterCall(in any) *pbgear.Scheduler_ScheduleNamed
 	out.Id = To_bytes(v.ValueAt(0))
 	// primitive field After
 	out.After = To_uint32(v.ValueAt(1))
-	// optional field MaybePeriodic
+	// optional field MaybePeriodic true
 	if v.HasValue() {
 		out.MaybePeriodic = To_Optional_Scheduler_ScheduleNamedAfterCall_maybe_periodic(v.ValueAt(2))
 	}
@@ -23487,7 +23505,7 @@ func To_Scheduler_ScheduleNamedCall(in any) *pbgear.Scheduler_ScheduleNamedCall 
 	out.Id = To_bytes(v.ValueAt(0))
 	// primitive field When
 	out.When = To_uint32(v.ValueAt(1))
-	// optional field MaybePeriodic
+	// optional field MaybePeriodic true
 	if v.HasValue() {
 		out.MaybePeriodic = To_Optional_Scheduler_ScheduleNamedCall_maybe_periodic(v.ValueAt(2))
 	}
@@ -27148,7 +27166,9 @@ func To_Treasury_SpendCall(in any) *pbgear.Treasury_SpendCall {
 	// field Beneficiary To_SpCoreCryptoAccountId32(w)
 	out.Beneficiary = To_SpCoreCryptoAccountId32(v.ValueAt(2))
 	// primitive field ValidFrom
-	out.ValidFrom = To_Optional_uint32(v.ValueAt(3))
+	if v.HasValue() {
+		out.ValidFrom = To_Optional_uint32(v.ValueAt(3))
+	}
 
 	return out //from message
 }
