@@ -2,8 +2,6 @@ package metadata
 
 import (
 	"fmt"
-	"math"
-	"strings"
 
 	substrateTypes "github.com/centrifuge/go-substrate-rpc-client/v4/types"
 	"github.com/gobeam/stringy"
@@ -11,6 +9,8 @@ import (
 	"github.com/streamingfast/substreams-gear/protobuf"
 	"github.com/streamingfast/substreams-gear/types"
 	"go.uber.org/zap"
+	"math"
+	"strings"
 )
 
 type MetadataConverter struct {
@@ -18,19 +18,20 @@ type MetadataConverter struct {
 	tracer logging.Tracer
 
 	TypeConverter *TypeConverter
-	metaData      *substrateTypes.Metadata
+	metadata      *substrateTypes.Metadata
 }
 
-func NewMetadataConverter(logger *zap.Logger, tracer logging.Tracer) *MetadataConverter {
+func NewMetadataConverter(metadata *substrateTypes.Metadata, logger *zap.Logger, tracer logging.Tracer) *MetadataConverter {
 	return &MetadataConverter{
-		logger: logger,
-		tracer: tracer,
+		logger:   logger,
+		tracer:   tracer,
+		metadata: metadata,
 	}
 }
 
-func (mc *MetadataConverter) FetchMessages() []*protobuf.Message {
+func (c *MetadataConverter) FetchMessages() []*protobuf.Message {
 	outputs := make([]*protobuf.Message, 0)
-	for _, seenMsg := range mc.TypeConverter.messages {
+	for _, seenMsg := range c.TypeConverter.messages {
 		if seenMsg != nil {
 			outputs = append(outputs, seenMsg)
 		}
@@ -38,26 +39,21 @@ func (mc *MetadataConverter) FetchMessages() []*protobuf.Message {
 	return outputs
 }
 
-func (mc *MetadataConverter) FetchMetadata() *substrateTypes.Metadata {
-	return mc.metaData
+func (c *MetadataConverter) FetchMetadata() *substrateTypes.Metadata {
+	return c.metadata
 }
 
-func (mc *MetadataConverter) Convert() ([]byte, error) {
-	metadata := LoadMetadata()
-	mc.metaData = metadata
-	if metadata.Version != 14 {
-		return nil, nil
-	}
+func (c *MetadataConverter) Convert() ([]*protobuf.Message, error) {
 
-	switch metadata.Version {
+	switch c.metadata.Version {
 	case 14:
-		mc.TypeConverter = &TypeConverter{
+		c.TypeConverter = &TypeConverter{
 			messages:         make(map[string]*protobuf.Message),
 			allMetadataTypes: []substrateTypes.PortableTypeV14{},
 		}
-		return mc.TypeConverter.convertTypesFromv14(metadata.AsMetadataV14)
+		return c.TypeConverter.convertTypesFromv14(c.metadata.AsMetadataV14)
 	default:
-		fmt.Println("Unsupported metadata version", metadata.Version)
+		fmt.Println("Unsupported metadata version", c.metadata.Version)
 	}
 
 	return nil, nil
@@ -68,7 +64,7 @@ type TypeConverter struct {
 	allMetadataTypes []substrateTypes.PortableTypeV14
 }
 
-func (c *TypeConverter) convertTypesFromv14(metadata substrateTypes.MetadataV14) ([]byte, error) {
+func (c *TypeConverter) convertTypesFromv14(metadata substrateTypes.MetadataV14) ([]*protobuf.Message, error) {
 	allMetadataTypes := metadata.Lookup.Types
 	c.allMetadataTypes = allMetadataTypes
 
@@ -131,16 +127,7 @@ func (c *TypeConverter) convertTypesFromv14(metadata substrateTypes.MetadataV14)
 		}
 	}
 
-	var sb strings.Builder
-	sb.WriteString("syntax = \"proto3\";\n")
-	sb.WriteString("package sf.substreams.gear.type.v1;\n")
-	sb.WriteString("option go_package = \"github.com/streamingfast/substreams-gear/pb/sf/substreams/gear/type/v1;\";\n\n")
-	for _, out := range outputs {
-		s := out.ToProto()
-		sb.WriteString(s)
-	}
-
-	return []byte(sb.String()), nil
+	return outputs, nil
 }
 
 func (c *TypeConverter) ProcessPalletCalls(callIdx int64, palletName string) []protobuf.Message {
