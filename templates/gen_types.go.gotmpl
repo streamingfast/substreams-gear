@@ -103,7 +103,14 @@ func {{ $funcName }}_wrap(in any) *pbgearextrinsic.Extrinsic{
 {{- $meta := .generator.Metadata }}
 {{- $generator := .generator }}
     // primitive field {{ $field.ToFieldName }}
-    out.{{ $field.ToFieldName }} = {{ $generator.FuncNameForPrimitive $msg $field }}(v.ValueAt({{ $index }}))
+    {{- $optional := $field.IsOptional }}
+    {{- if $optional}}
+    if v.HasValue() {
+    {{- end }}
+        out.{{ $field.ToFieldName }} = {{ $generator.FuncNameForPrimitive $msg $field }}(v.ValueAt({{ $index }}))
+    {{- if $optional}}
+    }
+    {{- end }}
 {{- end }}
 
 {{- /* ============================= */}}
@@ -115,7 +122,7 @@ func {{ $funcName }}_wrap(in any) *pbgearextrinsic.Extrinsic{
 {{- $index := .index }}
 {{- $meta := .generator.Metadata }}
 {{- $generator := .generator }}
-    // optional field {{ $field.ToFieldName }}
+    // optional field {{ $field.ToFieldName }} {{ $field.IsOptional }}
     if v.HasValue() {
         out.{{ $field.ToFieldName }} = {{ $generator.FuncNameForOptional $msg $field }}(v.ValueAt({{ $index }}))
     }
