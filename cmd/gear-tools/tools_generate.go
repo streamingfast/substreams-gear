@@ -15,6 +15,8 @@ import (
 	"go.uber.org/zap"
 )
 
+var specVersions = []string{"1420", "1410", "1400", "1310", "1300", "1210", "1200", "1110", "1050", "1040", "1030", "1020", "1010", "1000", "350", "340", "330", "320", "310", "210", "140", "130", "120", "100"}
+
 func NewToolsGenerate(logger *zap.Logger, tracer logging.Tracer) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "generate",
@@ -31,72 +33,79 @@ func NewToolsGenerate(logger *zap.Logger, tracer logging.Tracer) *cobra.Command 
 
 func generateE(logger *zap.Logger, tracer logging.Tracer) firecore.CommandExecutor {
 	return func(cmd *cobra.Command, args []string) error {
-		logger.Info("decoding metadata types")
+		for _, version := range specVersions {
+			logger.Info("decoding metadata types for version", zap.String("version", version))
 
-		version := "1420"
-		md, err := metadata.LoadMetadata(version)
-		if err != nil {
-			return fmt.Errorf("loading metadata: %w", err)
-		}
-		metadataConverter := metadata.NewMetadataConverter(md, logger, tracer)
-		messages, err := metadataConverter.Convert()
-		if err != nil {
-			return fmt.Errorf("converting metadata: %w", err)
-		}
+			md, err := metadata.LoadMetadata(version)
+			if err != nil {
+				return fmt.Errorf("loading metadata: %w", err)
+			}
+			metadataConverter := metadata.NewMetadataConverter(md, version, logger, tracer)
+			messages, err := metadataConverter.Convert()
+			logger.Info("done converting metadata", zap.String("version", version), zap.Int("messages", len(messages)))
+			if err != nil {
+				return fmt.Errorf("converting metadata: %w", err)
+			}
 
-		// sort the messages to have them in the same order on each run
-		sort.Slice(messages, func(i, j int) bool {
-			return messages[i].FullTypeName() < messages[j].FullTypeName()
-		})
+			if len(messages) == 0 {
+				logger.Info("no messages to generate")
+				continue
+			}
 
-		var sb strings.Builder
-		sb.WriteString("syntax = \"proto3\";\n")
-		sb.WriteString("package sf.substreams.gear.type.v1;\n")
-		sb.WriteString("option go_package = \"github.com/streamingfast/substreams-gear/pb/sf/substreams/gear/type/v1;\";\n\n")
-		for _, m := range messages {
-			s := m.ToProto()
-			sb.WriteString(s)
-		}
+			// sort the messages to have them in the same order on each run
+			sort.Slice(messages, func(i, j int) bool {
+				return messages[i].FullTypeName() < messages[j].FullTypeName()
+			})
 
-		protoPath := "proto/sf/substreams/gear/type/v1/"
+			var sb strings.Builder
+			sb.WriteString("syntax = \"proto3\";\n")
+			sb.WriteString(fmt.Sprintf("package sf.substreams.vara.type.v%s;\n", version))
+			sb.WriteString(fmt.Sprintf("option go_package = \"github.com/streamingfast/substreams-gear/pb/sf/substreams/vara/type/v%s;\";\n\n", version))
+			for _, m := range messages {
+				s := m.ToProto()
+				sb.WriteString(s)
+			}
 
-		err = os.MkdirAll(protoPath, os.ModePerm)
-		if err != nil {
-			return fmt.Errorf("failed to create directory %s: %w", protoPath, err)
-		}
+			protoPath := fmt.Sprintf("proto/sf/substreams/vara/type/v%s/", version)
 
-		err = os.WriteFile(filepath.Join(protoPath, "vara.proto"), []byte(sb.String()), 0644)
-		if err != nil {
-			return fmt.Errorf("failed to write file: %w", err)
-		}
+			err = os.MkdirAll(protoPath, os.ModePerm)
+			if err != nil {
+				return fmt.Errorf("failed to create directory %s: %w", protoPath, err)
+			}
 
-		logger.Info("running types generator")
-		gen := generator.NewGenerator("templates/gen_types.go.gotmpl", messages, md, version)
-		content, err := gen.Generate()
-		if err != nil {
-			return fmt.Errorf("generating output proto: %w", err)
-		}
+			err = os.WriteFile(filepath.Join(protoPath, "vara.proto"), []byte(sb.String()), 0644)
+			if err != nil {
+				return fmt.Errorf("failed to write file: %w", err)
+			}
 
-		goPackage := "generated/convert" + version
-		err = os.MkdirAll(goPackage, os.ModePerm)
-		if err != nil {
-			return fmt.Errorf("failed to create directory generated: %w", err)
-		}
+			logger.Info("running types generator")
+			gen := generator.NewGenerator("templates/gen_types.go.gotmpl", messages, md, version)
+			content, err := gen.Generate()
+			if err != nil {
+				return fmt.Errorf("generating output proto: %w", err)
+			}
 
-		err = os.WriteFile(filepath.Join(goPackage, "converter.go"), content, 0644)
-		if err != nil {
-			return fmt.Errorf("failed to write file: %w", err)
-		}
+			goPackage := "generated/convert" + version
+			err = os.MkdirAll(goPackage, os.ModePerm)
+			if err != nil {
+				return fmt.Errorf("failed to create directory generated: %w", err)
+			}
 
-		dbg := generator.NewDecodedBlockGenerator("templates/extrinsic.proto.gotmpl", messages)
-		content, err = dbg.Generate()
-		if err != nil {
-			return fmt.Errorf("generating extrinsic proto: %w", err)
-		}
+			err = os.WriteFile(filepath.Join(goPackage, "converter.go"), content, 0644)
+			if err != nil {
+				return fmt.Errorf("failed to write file: %w", err)
+			}
 
-		err = os.WriteFile(filepath.Join(protoPath, "extrinsics.proto"), content, 0644)
-		if err != nil {
-			return fmt.Errorf("failed to write file: %w", err)
+			dbg := generator.NewDecodedBlockGenerator("templates/extrinsic.proto.gotmpl", messages, version)
+			content, err = dbg.Generate()
+			if err != nil {
+				return fmt.Errorf("generating extrinsic proto: %w", err)
+			}
+
+			err = os.WriteFile(filepath.Join(protoPath, "extrinsics.proto"), content, 0644)
+			if err != nil {
+				return fmt.Errorf("failed to write file: %w", err)
+			}
 		}
 
 		return nil

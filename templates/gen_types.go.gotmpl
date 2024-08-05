@@ -1,5 +1,5 @@
 {{- $generator := . }}
-package convert{{$generator.Version}}
+package convert{{ $generator.Version }}
 
 import (
     "fmt"
@@ -7,7 +7,7 @@ import (
 
     "github.com/centrifuge/go-substrate-rpc-client/v4/registry"
     "github.com/centrifuge/go-substrate-rpc-client/v4/types"
-    pbgearextrinsic "github.com/streamingfast/substreams-gear/pb/sf/substreams/gear/type/v1"
+    pbgearextrinsic "github.com/streamingfast/substreams-gear/pb/sf/substreams/vara/type/v{{ $generator.Version }}"
     pbgear "github.com/streamingfast/substreams-gear/pb/sf/substreams/gear/type/v1"
 )
 

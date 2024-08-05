@@ -1,0 +1,271 @@
+syntax = "proto3";
+package sf.substreams.varagear.type.v1;
+
+option go_package = "github.com/streamingfast/substreams-gear/pb/sf/substreams/vara/type/v1";
+import "sf/substreams/vara/type/v1420/vara.proto";
+import "sf/substreams/vara/type/v1410/vara.proto";
+import "sf/substreams/vara/type/v1400/vara.proto";
+import "sf/substreams/vara/type/v1310/vara.proto";
+import "sf/substreams/vara/type/v1300/vara.proto";
+import "sf/substreams/vara/type/v1210/vara.proto";
+import "sf/substreams/vara/type/v1200/vara.proto";
+import "sf/substreams/vara/type/v1110/vara.proto";
+import "sf/substreams/vara/type/v1050/vara.proto";
+import "sf/substreams/vara/type/v1040/vara.proto";
+import "sf/substreams/vara/type/v1030/vara.proto";
+import "sf/substreams/vara/type/v1020/vara.proto";
+import "sf/substreams/vara/type/v1010/vara.proto";
+import "sf/substreams/vara/type/v1000/vara.proto";
+import "sf/substreams/vara/type/v350/vara.proto";
+import "sf/substreams/vara/type/v340/vara.proto";
+import "sf/substreams/vara/type/v330/vara.proto";
+import "sf/substreams/vara/type/v320/vara.proto";
+import "sf/substreams/vara/type/v310/vara.proto";
+import "sf/substreams/vara/type/v210/vara.proto";
+import "sf/substreams/vara/type/v140/vara.proto";
+import "sf/substreams/vara/type/v130/vara.proto";
+import "sf/substreams/vara/type/v120/vara.proto";
+import "sf/substreams/vara/type/v100/vara.proto";
+
+import "sf/substreams/vara/type/v1420/extrinsic.proto";
+import "sf/substreams/vara/type/v1410/extrinsic.proto";
+import "sf/substreams/vara/type/v1400/extrinsic.proto";
+import "sf/substreams/vara/type/v1310/extrinsic.proto";
+import "sf/substreams/vara/type/v1300/extrinsic.proto";
+import "sf/substreams/vara/type/v1210/extrinsic.proto";
+import "sf/substreams/vara/type/v1200/extrinsic.proto";
+import "sf/substreams/vara/type/v1110/extrinsic.proto";
+import "sf/substreams/vara/type/v1050/extrinsic.proto";
+import "sf/substreams/vara/type/v1040/extrinsic.proto";
+import "sf/substreams/vara/type/v1030/extrinsic.proto";
+import "sf/substreams/vara/type/v1020/extrinsic.proto";
+import "sf/substreams/vara/type/v1010/extrinsic.proto";
+import "sf/substreams/vara/type/v1000/extrinsic.proto";
+import "sf/substreams/vara/type/v350/extrinsic.proto";
+import "sf/substreams/vara/type/v340/extrinsic.proto";
+import "sf/substreams/vara/type/v330/extrinsic.proto";
+import "sf/substreams/vara/type/v320/extrinsic.proto";
+import "sf/substreams/vara/type/v310/extrinsic.proto";
+import "sf/substreams/vara/type/v210/extrinsic.proto";
+import "sf/substreams/vara/type/v140/extrinsic.proto";
+import "sf/substreams/vara/type/v130/extrinsic.proto";
+import "sf/substreams/vara/type/v120/extrinsic.proto";
+import "sf/substreams/vara/type/v100/extrinsic.proto";
+
+import "sf/gear/type/v1/block.proto";
+
+message Extrinsic {
+    oneof Extrinsics {
+        Extrinsics1420 extrinsics1420 = 6;
+        Extrinsics1410 extrinsics1410 = 7;
+        Extrinsics1400 extrinsics1400 = 8;
+        Extrinsics1310 extrinsics1310 = 9;
+        Extrinsics1300 extrinsics1300 = 10;
+        Extrinsics1210 extrinsics1210 = 11;
+        Extrinsics1200 extrinsics1200 = 12;
+        Extrinsics1110 extrinsics1110 = 13;
+        Extrinsics1050 extrinsics1050 = 14;
+        Extrinsics1040 extrinsics1040 = 15;
+        Extrinsics1030 extrinsics1030 = 16;
+        Extrinsics1020 extrinsics1020 = 17;
+        Extrinsics1010 extrinsics1010 = 18;
+        Extrinsics1000 extrinsics1000 = 19;
+        Extrinsics350 extrinsics350 = 20;
+        Extrinsics340 extrinsics340 = 21;
+        Extrinsics330 extrinsics330 = 22;
+        Extrinsics320 extrinsics320 = 23;
+        Extrinsics310 extrinsics310 = 24;
+        Extrinsics210 extrinsics210 = 25;
+        Extrinsics140 extrinsics140 = 26;
+        Extrinsics130 extrinsics130 = 27;
+        Extrinsics120 extrinsics120 = 28;
+        Extrinsics100 extrinsics100 = 29;
+    }
+}
+
+message Block {
+    uint64 number = 1;
+    bytes hash = 2;
+    sf.gear.type.v1.Header header = 3;
+    repeated sf.gear.type.v1.DigestItem digest_items = 4;
+    bytes justification = 5;
+
+    repeated Extrinsic extrinsics = 6;
+
+    
+    
+    oneof Events {
+        Events1420 events1420 = 30;
+        Events1410 events1410 = 31;
+        Events1400 events1400 = 32;
+        Events1310 events1310 = 33;
+        Events1300 events1300 = 34;
+        Events1210 events1210 = 35;
+        Events1200 events1200 = 36;
+        Events1110 events1110 = 37;
+        Events1050 events1050 = 38;
+        Events1040 events1040 = 39;
+        Events1030 events1030 = 40;
+        Events1020 events1020 = 41;
+        Events1010 events1010 = 42;
+        Events1000 events1000 = 43;
+        Events350 events350 = 44;
+        Events340 events340 = 45;
+        Events330 events330 = 50;
+        Events320 events320 = 51;
+        Events310 events310 = 52;
+        Events210 events210 = 53;
+        Events140 events140 = 54;
+        Events130 events130 = 55;
+        Events120 events120 = 56;
+        Events100 events100 = 57;
+    }
+}
+
+
+
+message Extrinsics1420 {
+    repeated sf.substreams.vara.type.v1420.Extrinsic extrincs = 1;
+}
+message Extrinsics1410 {
+    repeated sf.substreams.vara.type.v1410.Extrinsic extrincs = 1;
+}
+message Extrinsics1400 {
+    repeated sf.substreams.vara.type.v1400.Extrinsic extrincs = 1;
+}
+message Extrinsics1310 {
+    repeated sf.substreams.vara.type.v1310.Extrinsic extrincs = 1;
+}
+message Extrinsics1300 {
+    repeated sf.substreams.vara.type.v1300.Extrinsic extrincs = 1;
+}
+message Extrinsics1210 {
+    repeated sf.substreams.vara.type.v1210.Extrinsic extrincs = 1;
+}
+message Extrinsics1200 {
+    repeated sf.substreams.vara.type.v1200.Extrinsic extrincs = 1;
+}
+message Extrinsics1110 {
+    repeated sf.substreams.vara.type.v1110.Extrinsic extrincs = 1;
+}
+message Extrinsics1050 {
+    repeated sf.substreams.vara.type.v1050.Extrinsic extrincs = 1;
+}
+message Extrinsics1040 {
+    repeated sf.substreams.vara.type.v1040.Extrinsic extrincs = 1;
+}
+message Extrinsics1030 {
+    repeated sf.substreams.vara.type.v1030.Extrinsic extrincs = 1;
+}
+message Extrinsics1020 {
+    repeated sf.substreams.vara.type.v1020.Extrinsic extrincs = 1;
+}
+message Extrinsics1010 {
+    repeated sf.substreams.vara.type.v1010.Extrinsic extrincs = 1;
+}
+message Extrinsics1000 {
+    repeated sf.substreams.vara.type.v1000.Extrinsic extrincs = 1;
+}
+message Extrinsics350 {
+    repeated sf.substreams.vara.type.v350.Extrinsic extrincs = 1;
+}
+message Extrinsics340 {
+    repeated sf.substreams.vara.type.v340.Extrinsic extrincs = 1;
+}
+message Extrinsics330 {
+    repeated sf.substreams.vara.type.v330.Extrinsic extrincs = 1;
+}
+message Extrinsics320 {
+    repeated sf.substreams.vara.type.v320.Extrinsic extrincs = 1;
+}
+message Extrinsics310 {
+    repeated sf.substreams.vara.type.v310.Extrinsic extrincs = 1;
+}
+message Extrinsics210 {
+    repeated sf.substreams.vara.type.v210.Extrinsic extrincs = 1;
+}
+message Extrinsics140 {
+    repeated sf.substreams.vara.type.v140.Extrinsic extrincs = 1;
+}
+message Extrinsics130 {
+    repeated sf.substreams.vara.type.v130.Extrinsic extrincs = 1;
+}
+message Extrinsics120 {
+    repeated sf.substreams.vara.type.v120.Extrinsic extrincs = 1;
+}
+message Extrinsics100 {
+    repeated sf.substreams.vara.type.v100.Extrinsic extrincs = 1;
+}
+
+message Events1420 {
+    repeated sf.substreams.vara.type.v1420.Event events = 1;
+}
+message Events1410 {
+    repeated sf.substreams.vara.type.v1410.Event events = 1;
+}
+message Events1400 {
+    repeated sf.substreams.vara.type.v1400.Event events = 1;
+}
+message Events1310 {
+    repeated sf.substreams.vara.type.v1310.Event events = 1;
+}
+message Events1300 {
+    repeated sf.substreams.vara.type.v1300.Event events = 1;
+}
+message Events1210 {
+    repeated sf.substreams.vara.type.v1210.Event events = 1;
+}
+message Events1200 {
+    repeated sf.substreams.vara.type.v1200.Event events = 1;
+}
+message Events1110 {
+    repeated sf.substreams.vara.type.v1110.Event events = 1;
+}
+message Events1050 {
+    repeated sf.substreams.vara.type.v1050.Event events = 1;
+}
+message Events1040 {
+    repeated sf.substreams.vara.type.v1040.Event events = 1;
+}
+message Events1030 {
+    repeated sf.substreams.vara.type.v1030.Event events = 1;
+}
+message Events1020 {
+    repeated sf.substreams.vara.type.v1020.Event events = 1;
+}
+message Events1010 {
+    repeated sf.substreams.vara.type.v1010.Event events = 1;
+}
+message Events1000 {
+    repeated sf.substreams.vara.type.v1000.Event events = 1;
+}
+message Events350 {
+    repeated sf.substreams.vara.type.v350.Event events = 1;
+}
+message Events340 {
+    repeated sf.substreams.vara.type.v340.Event events = 1;
+}
+message Events330 {
+    repeated sf.substreams.vara.type.v330.Event events = 1;
+}
+message Events320 {
+    repeated sf.substreams.vara.type.v320.Event events = 1;
+}
+message Events310 {
+    repeated sf.substreams.vara.type.v310.Event events = 1;
+}
+message Events210 {
+    repeated sf.substreams.vara.type.v210.Event events = 1;
+}
+message Events140 {
+    repeated sf.substreams.vara.type.v140.Event events = 1;
+}
+message Events130 {
+    repeated sf.substreams.vara.type.v130.Event events = 1;
+}
+message Events120 {
+    repeated sf.substreams.vara.type.v120.Event events = 1;
+}
+message Events100 {
+    repeated sf.substreams.vara.type.v100.Event events = 1;
+}

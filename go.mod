@@ -13,7 +13,6 @@ require (
 	github.com/gobeam/stringy v0.0.7
 	github.com/planetscale/vtprotobuf v0.6.0
 	github.com/spf13/cobra v1.7.0
-	github.com/streamingfast/cli v0.0.4-0.20240412191021-5f81842cb71d
 	github.com/streamingfast/firehose-gear v0.0.0-20240801184131-b94c4ba58381
 	go.uber.org/zap v1.26.0
 )
@@ -125,6 +124,7 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.15.0 // indirect
 	github.com/streamingfast/bstream v0.0.2-0.20240619142813-9d23840859bf // indirect
+	github.com/streamingfast/cli v0.0.4-0.20240412191021-5f81842cb71d // indirect
 	github.com/streamingfast/dauth v0.0.0-20240222213226-519afc16cf84 // indirect
 	github.com/streamingfast/dbin v0.9.1-0.20231117225723-59790c798e2c // indirect
 	github.com/streamingfast/derr v0.0.0-20230515163924-8570aaa43fe1 // indirect
