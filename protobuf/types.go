@@ -1,6 +1,7 @@
 package protobuf
 
 import (
+	"crypto/sha256"
 	"fmt"
 	"strings"
 
@@ -29,6 +30,7 @@ type Field interface {
 	ToFieldName() string
 	ReturnType(meta *types.Metadata) string
 	OutputType(meta *types.Metadata) string
+	Hash() string
 }
 
 type Proto struct {
@@ -39,12 +41,33 @@ type Proto struct {
 }
 
 type Message struct {
-	Pallet   string
-	Name     string
-	Fields   []Field
-	LookupID int64
-	IsCall   bool
-	IsEvent  bool
+	SpecVersion string
+	Pallet      string
+	Name        string
+	Fields      []Field
+	LookupID    int64
+	IsCall      bool
+	IsEvent     bool
+}
+
+func (m *Message) Hash() string {
+	sb := strings.Builder{}
+	sb.WriteString(m.Pallet)
+	sb.WriteString(m.Name)
+	//sb.WriteString(fmt.Sprintf("%d", m.LookupID))
+	for _, field := range m.Fields {
+		sb.WriteString(field.Hash())
+	}
+
+	h := sha256.New()
+	h.Write([]byte(sb.String()))
+	x := fmt.Sprintf("%x", h.Sum(nil))
+	return x
+
+}
+
+func (m *Message) Equals(other *Message) bool {
+	return m.Hash() == other.Hash()
 }
 
 func (m *Message) WrapTypeName() string {
@@ -61,7 +84,7 @@ func (m *Message) GetLookupId() int64 {
 }
 
 func (m *Message) FullTypeName() string {
-	suffix := utils.ToPascalCase(m.Name, utils.CapitalizeCharAfterNum, utils.RemoveUnderscoreBeforeNum)
+	suffix := utils.ToPascalCase(m.Name, utils.CapitalizeCharAfterNum, utils.RemoveUnderscoreBeforeNum) + "_" + m.SpecVersion
 	if m.Pallet == "" {
 		return suffix
 	}
@@ -124,6 +147,20 @@ type BasicField struct {
 	LookupID    int64
 	Compact     bool
 	VariantByte int64
+}
+
+func (f *BasicField) Hash() string {
+	sb := strings.Builder{}
+	sb.WriteString(f.Pallet)
+	sb.WriteString(f.Type)
+	sb.WriteString(f.Name)
+	sb.WriteString(fmt.Sprintf("%t%t%t%d", f.Optional, f.Primitive, f.Compact, f.VariantByte))
+
+	h := sha256.New()
+	s := sb.String()
+	h.Write([]byte(s))
+	return fmt.Sprintf("%x", h.Sum(nil))
+
 }
 
 func (f *BasicField) IsCompact() bool {
@@ -230,6 +267,18 @@ type RepeatedField struct {
 	Primitive bool
 }
 
+func (f *RepeatedField) Hash() string {
+	sb := strings.Builder{}
+	sb.WriteString(f.Pallet)
+	sb.WriteString(f.Type)
+	sb.WriteString(f.Name)
+	sb.WriteString(fmt.Sprintf("%t", f.Primitive))
+
+	h := sha256.New()
+	h.Write([]byte(sb.String()))
+	return fmt.Sprintf("%x", h.Sum(nil))
+}
+
 func (f *RepeatedField) IsCompact() bool {
 	return false
 }
@@ -331,6 +380,20 @@ type OneOfField struct {
 	LookupID  int64
 	Primitive bool
 	Optional  bool
+}
+
+func (f *OneOfField) Hash() string {
+	sb := strings.Builder{}
+	sb.WriteString(f.Pallet)
+	sb.WriteString(f.Name)
+	sb.WriteString(fmt.Sprintf("%t%t", f.Primitive, f.Optional))
+	for _, t := range f.Types {
+		sb.WriteString(t.Hash())
+	}
+
+	h := sha256.New()
+	h.Write([]byte(sb.String()))
+	return fmt.Sprintf("%x", h.Sum(nil))
 }
 
 func (f *OneOfField) IsCompact() bool {
