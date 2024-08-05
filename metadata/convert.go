@@ -45,12 +45,12 @@ func (c *Converter) FetchMetadata() *substrateTypes.Metadata {
 	return c.metadata
 }
 
-func (c *Converter) Convert() ([]*protobuf.Message, error) {
+func (c *Converter) Convert(knownMessage map[string]*protobuf.Message) error {
 	switch c.metadata.Version {
 	case 14:
 		c.TypeConverter = &TypeConverter{
 			specVersion:      c.specVersion,
-			messages:         make(map[string]*protobuf.Message),
+			messages:         knownMessage,
 			allMetadataTypes: []substrateTypes.PortableTypeV14{},
 		}
 		return c.TypeConverter.convertTypesFromv14(c.metadata.AsMetadataV14)
@@ -58,7 +58,7 @@ func (c *Converter) Convert() ([]*protobuf.Message, error) {
 		fmt.Println("Unsupported metadata version", c.metadata.Version)
 	}
 
-	return nil, nil
+	return nil
 }
 
 type TypeConverter struct {
@@ -67,15 +67,16 @@ type TypeConverter struct {
 	allMetadataTypes []substrateTypes.PortableTypeV14
 }
 
-func (c *TypeConverter) convertTypesFromv14(metadata substrateTypes.MetadataV14) ([]*protobuf.Message, error) {
+func (c *TypeConverter) convertTypesFromv14(metadata substrateTypes.MetadataV14) error {
 	allMetadataTypes := metadata.Lookup.Types
 	c.allMetadataTypes = allMetadataTypes
 
 	for _, pallet := range metadata.Pallets {
 		palletMessage := &protobuf.Message{
-			Pallet:   "",
-			Name:     string(pallet.Name) + "_pallet",
-			LookupID: pallet.Calls.Type.Int64(),
+			SpecVersion: c.specVersion,
+			Pallet:      "",
+			Name:        string(pallet.Name) + "_pallet",
+			LookupID:    pallet.Calls.Type.Int64(),
 		}
 
 		if pallet.HasCalls {
@@ -101,7 +102,9 @@ func (c *TypeConverter) convertTypesFromv14(metadata substrateTypes.MetadataV14)
 			palletMessage.Fields = append(palletMessage.Fields, oneOfCall)
 		}
 
-		c.messages[palletMessage.Hash()] = palletMessage
+		if _, found := c.messages[palletMessage.Hash()]; !found {
+			c.messages[palletMessage.Hash()] = palletMessage
+		}
 
 		if pallet.HasEvents {
 			idx := pallet.Events.Type.Int64()
@@ -113,24 +116,20 @@ func (c *TypeConverter) convertTypesFromv14(metadata substrateTypes.MetadataV14)
 				callName := string(variant.Name)
 				messageName := stringy.New(palletName).PascalCase().Get() + "_" + stringy.New(callName).PascalCase().Get() + "_Event"
 				message := &protobuf.Message{
-					Name:    messageName,
-					IsEvent: true,
+					SpecVersion: c.specVersion,
+					Name:        messageName,
+					IsEvent:     true,
 				}
 
 				c.ProcessPalletEvents(int64(i), palletName)
-				c.messages[message.Hash()] = message
+				if _, found := c.messages[palletMessage.Hash()]; !found {
+					c.messages[message.Hash()] = message
+				}
 			}
 		}
 	}
 
-	outputs := make([]*protobuf.Message, 0)
-	for _, seenMsg := range c.messages {
-		if seenMsg != nil {
-			outputs = append(outputs, seenMsg)
-		}
-	}
-
-	return outputs, nil
+	return nil
 }
 
 func (c *TypeConverter) ProcessPalletCalls(callIdx int64, palletName string) []protobuf.Message {
@@ -141,10 +140,11 @@ func (c *TypeConverter) ProcessPalletCalls(callIdx int64, palletName string) []p
 	for _, variant := range calls.Variants {
 		callName := string(variant.Name)
 		message := &protobuf.Message{
-			Pallet:   palletName,
-			Name:     callName + "_call",
-			LookupID: math.MaxInt64,
-			IsCall:   true,
+			SpecVersion: c.specVersion,
+			Pallet:      palletName,
+			Name:        callName + "_call",
+			LookupID:    math.MaxInt64,
+			IsCall:      true,
 		}
 
 		for _, f := range variant.Fields {
@@ -155,7 +155,9 @@ func (c *TypeConverter) ProcessPalletCalls(callIdx int64, palletName string) []p
 			}
 		}
 
-		c.messages[message.Hash()] = message
+		if _, found := c.messages[message.Hash()]; !found {
+			c.messages[message.Hash()] = message
+		}
 		out = append(out, *message)
 	}
 	return out
@@ -168,10 +170,11 @@ func (c *TypeConverter) ProcessPalletEvents(callIdx int64, palletName string) {
 	for _, variant := range events.Variants {
 		eventName := string(variant.Name)
 		message := &protobuf.Message{
-			Pallet:   palletName,
-			Name:     eventName + "_Event",
-			LookupID: math.MaxInt64,
-			IsEvent:  true,
+			SpecVersion: c.specVersion,
+			Pallet:      palletName,
+			Name:        eventName + "_Event",
+			LookupID:    math.MaxInt64,
+			IsEvent:     true,
 		}
 
 		for i, f := range variant.Fields {
@@ -186,7 +189,9 @@ func (c *TypeConverter) ProcessPalletEvents(callIdx int64, palletName string) {
 			}
 		}
 
-		c.messages[message.Hash()] = message
+		if _, found := c.messages[message.Hash()]; !found {
+			c.messages[message.Hash()] = message
+		}
 	}
 }
 
@@ -414,8 +419,9 @@ func (c *TypeConverter) ExtractTypeName(ttype substrateTypes.PortableTypeV14, pa
 
 func (c *TypeConverter) MessageForType(typeName string, ttype substrateTypes.PortableTypeV14, palletName string, callName string, fieldName string) {
 	msg := &protobuf.Message{
-		Name:     typeName,
-		LookupID: ttype.ID.Int64(),
+		SpecVersion: c.specVersion,
+		Name:        typeName,
+		LookupID:    ttype.ID.Int64(),
 	}
 
 	if ttype.Type.Def.IsTuple {
@@ -530,9 +536,10 @@ func (c *TypeConverter) FieldForRecursiveType(ttype substrateTypes.PortableTypeV
 
 func (c *TypeConverter) MessageForVariantTypes(name string, variant substrateTypes.Si1Variant, palletName string, callName string, fieldName string) *protobuf.Message {
 	msg := &protobuf.Message{
-		Pallet:   palletName,
-		Name:     name,
-		LookupID: math.MaxInt64,
+		SpecVersion: c.specVersion,
+		Pallet:      palletName,
+		Name:        name,
+		LookupID:    math.MaxInt64,
 	}
 
 	for i, f := range variant.Fields {
@@ -599,10 +606,11 @@ func (c *TypeConverter) FieldForVariant(ttype substrateTypes.PortableTypeV14, pa
 	}
 
 	msg := &protobuf.Message{
-		Pallet:   palletName,
-		Name:     fieldName,
-		Fields:   []protobuf.Field{oneOf},
-		LookupID: ttype.ID.Int64(),
+		SpecVersion: c.specVersion,
+		Pallet:      palletName,
+		Name:        fieldName,
+		Fields:      []protobuf.Field{oneOf},
+		LookupID:    ttype.ID.Int64(),
 	}
 
 	for _, v := range ttype.Type.Def.Variant.Variants {

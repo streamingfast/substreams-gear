@@ -12,14 +12,12 @@ import (
 type DecodedBlockGenerator struct {
 	templatePath string
 	Messages     []*protobuf.Message
-	Version      string
 }
 
-func NewDecodedBlockGenerator(templatePath string, messages []*protobuf.Message, version string) *DecodedBlockGenerator {
+func NewDecodedBlockGenerator(templatePath string, messages []*protobuf.Message) *DecodedBlockGenerator {
 	return &DecodedBlockGenerator{
 		templatePath: templatePath,
 		Messages:     messages,
-		Version:      version,
 	}
 }
 

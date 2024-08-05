@@ -54,7 +54,7 @@ func (m *Message) Hash() string {
 	sb := strings.Builder{}
 	sb.WriteString(m.Pallet)
 	sb.WriteString(m.Name)
-	//sb.WriteString(fmt.Sprintf("%d", m.LookupID))
+	sb.WriteString(fmt.Sprintf("%d", m.LookupID))
 	for _, field := range m.Fields {
 		sb.WriteString(field.Hash())
 	}

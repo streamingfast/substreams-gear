@@ -15,21 +15,20 @@ import (
 type Generator struct {
 	templatePath string
 
-	Messages []*protobuf.Message
-	Metadata *types.Metadata
+	Messages  []*protobuf.Message
+	Metadatas map[string]*types.Metadata
 
 	seenFields map[string]bool
 	IdToField  map[int64]protobuf.Field
 	Version    string
 }
 
-func NewGenerator(templatePath string, messages []*protobuf.Message, metadata *types.Metadata, version string) *Generator {
+func NewGenerator(templatePath string, messages []*protobuf.Message, metadatas map[string]*types.Metadata) *Generator {
 	return &Generator{
 		templatePath: templatePath,
 		Messages:     messages,
-		Metadata:     metadata,
+		Metadatas:    metadatas,
 		seenFields:   make(map[string]bool),
-		Version:      version,
 	}
 }
 
@@ -135,12 +134,12 @@ func (g *Generator) Wrap(items []WrapItem) map[any]any {
 	return out
 }
 
-func (g *Generator) TypeForField(field protobuf.Lookupable) string {
+func (g *Generator) TypeForField(field protobuf.Lookupable, meta *types.Metadata) string {
 	idx := field.GetLookupId()
 	if idx == math.MaxInt64 {
 		return "registry.DecodedFields"
 	}
-	ttype := g.Metadata.AsMetadataV14.EfficientLookup[idx]
+	ttype := meta.AsMetadataV14.EfficientLookup[idx]
 
 	switch {
 	case ttype.Def.IsCompact:
@@ -193,17 +192,17 @@ func (g *Generator) TypeForField(field protobuf.Lookupable) string {
 	return "registry.DecodedFields"
 }
 
-func (g *Generator) CompactChildType(field protobuf.Field) types.Si1TypeDef {
+func (g *Generator) CompactChildType(field protobuf.Field, meta *types.Metadata) types.Si1TypeDef {
 	idx := field.GetLookupId()
-	ttype := g.Metadata.AsMetadataV14.EfficientLookup[idx]
+	ttype := meta.AsMetadataV14.EfficientLookup[idx]
 	return ttype.Def
 }
 
-func (g *Generator) LookupType(idx int64) types.Si1TypeDef {
+func (g *Generator) LookupType(idx int64, meta *types.Metadata) types.Si1TypeDef {
 	if idx == math.MaxInt64 {
 		return types.Si1TypeDef{}
 	}
-	ttype := g.Metadata.AsMetadataV14.EfficientLookup[idx]
+	ttype := meta.AsMetadataV14.EfficientLookup[idx]
 	return ttype.Def
 }
 
